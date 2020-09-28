@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class PIGeneratorFn extends Combine.CombineFn<Integer,PIGeneratorFn.Accum,String>{
+class PIGeneratorFn extends Combine.CombineFn<Long,PIGeneratorFn.Accum,String>{
 
     private static final Logger __logger = Logger.getLogger("com.application.ApproxPIBeam");
 
@@ -70,7 +70,7 @@ class PIGeneratorFn extends Combine.CombineFn<Integer,PIGeneratorFn.Accum,String
     }
 
     @Override
-    public Accum addInput(Accum mutableAccumulator, Integer input) {
+    public Accum addInput(Accum mutableAccumulator, Long input) {
         double x = -1 + 2 * Math.random();
         double y = -1 + 2 * Math.random();
         if (x * x + y * y <= 1.0) {
