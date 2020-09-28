@@ -1,0 +1,1 @@
+mvn exec:java -Dexec.mainClass="com.application.Main" -Dexec.args="--inputPrecision=1000000 --runner=DirectRunner"
