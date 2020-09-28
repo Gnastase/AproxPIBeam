@@ -15,6 +15,7 @@ public class Main {
         @Default.String("100000")
         @Description("Give me a precision")
         Long getInputPrecision();
+        void setInputPrecision(Long value);
     }
 
 
