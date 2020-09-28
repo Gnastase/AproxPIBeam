@@ -1,3 +1,5 @@
+package com.application;
+
 import org.apache.beam.sdk.transforms.Combine;
 
 import java.io.Serializable;
@@ -7,7 +9,7 @@ import java.util.logging.Logger;
 
 class PIGeneratorFn extends Combine.CombineFn<Integer,PIGeneratorFn.Accum,String>{
 
-    private static final Logger __logger = Logger.getLogger("ApproxPIBeam");
+    private static final Logger __logger = Logger.getLogger("com.application.ApproxPIBeam");
 
     public static class Accum implements Serializable {
         private final int insideCount;
