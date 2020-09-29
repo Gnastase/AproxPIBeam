@@ -12,10 +12,10 @@ public class Main {
 
 
     public interface PrecisionOptions extends PipelineOptions{
-        @Default.String("100000")
+        @Default.Long(100000)
         @Description("Give me a precision")
-        String getInputPrecision();
-        void setInputPrecision(String value);
+        Long getInputPrecision();
+        void setInputPrecision(Long value);
     }
 
 
@@ -25,8 +25,8 @@ public class Main {
         Pipeline pipeline = Pipeline.create(options);
 
         pipeline
-                .apply(GenerateSequence.from(0).to(Long.parseLong(options.getInputPrecision())))
-                .apply(Combine.globally(new PIGeneratorFn())) ; //globally e window, adica intoarce Pcollection cu un singur element
+                .apply(GenerateSequence.from(0).to(options.getInputPrecision()))
+                .apply(Combine.globally(new PIGeneratorFn())) ;
         pipeline.run().waitUntilFinish();
 
     }
