@@ -8,6 +8,7 @@ import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.values.KV;
+import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
 
 import java.util.logging.Logger;
@@ -22,7 +23,6 @@ public class Main {
         Long getInputPrecision();
         void setInputPrecision(Long value);
     }
-
 
     public static void PiWithCombine(PrecisionOptions options){
 
@@ -53,6 +53,7 @@ public class Main {
         return false;
     }
 
+
     public static void main(String[] args) {
         PrecisionOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(PrecisionOptions.class);
 
@@ -62,17 +63,9 @@ public class Main {
                 .apply(GenerateSequence.from(0).to(options.getInputPrecision()))
                 .apply(MapElements.into(TypeDescriptors.booleans())
                 .via(element -> getHit()))
-                .apply(Count.perElement());
-            /*
-                .apply(ParDo.of(new DoFn<KV<Boolean, Long>, Object>() {
+                .apply(Count.perElement())
+                .apply(Combine.globally(new GetResultFn()));
 
-                    @ProcessElement
-                    public void processElement(@Element KV<Boolean,Long> input, OutputReceiver<Object> outputReceiver){
-                        __logger.info(String.format("Combine tn %s %f", input.getKey(),input.getValue()));
-
-                    }
-                }));
-        */
         pipeline.run().waitUntilFinish();
 
 
