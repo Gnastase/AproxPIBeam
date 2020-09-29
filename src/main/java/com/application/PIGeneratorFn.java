@@ -54,7 +54,7 @@ class PIGeneratorFn extends Combine.CombineFn<Long,PIGeneratorFn.Accum,String>{
         }
 
         double approxPI() {
-            return 4.0 * insideCount / (totalCount * 1.0);
+            return 4.0 * insideCount / (totalCount * 1.0);  // de aici iese val lui pi ( insideCount = numar de True, totalCount numar de false)
         }
 
         double relError() {
@@ -70,8 +70,8 @@ class PIGeneratorFn extends Combine.CombineFn<Long,PIGeneratorFn.Accum,String>{
     }
 
     @Override
-    public Accum addInput(Accum mutableAccumulator, Long input) {
-        double x = -1 + 2 * Math.random();
+    public Accum addInput(Accum mutableAccumulator, Long input) { // fara COMBINEFN, fara ACCUm, KV cu <boolean>
+        double x = -1 + 2 * Math.random();                         // o pCollection de boolean, cu group numeram cate au nimerit tinta,
         double y = -1 + 2 * Math.random();
         if (x * x + y * y <= 1.0) {
             return mutableAccumulator.newFromInsideEvent();
