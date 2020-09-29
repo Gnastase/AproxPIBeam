@@ -5,23 +5,23 @@ import org.apache.beam.sdk.values.KV;
 
 import java.util.logging.Logger;
 
- class GetResultFn implements SerializableFunction<Iterable<KV<Boolean,Long>>, String> {
+ class GetResultFn implements SerializableFunction<Iterable<KVWrapper>, String> {
 
     private static final Logger __logger = Logger.getLogger("com.application.ApproxPIBeam");
 
      @Override
-     public String apply(Iterable<KV<Boolean, Long>> input) {
+     public String apply(Iterable<KVWrapper> input) {
          Long insideCount = 0L;
          Long totalCount = 0L;
          Double approxPI = 0d;
          Double relError = 0d;
 
-         for(KV<Boolean,Long> step : input){
+         for(KVWrapper step : input){
 
-             if(step.getKey() == true){
-                 insideCount =  step.getValue();
+             if(step.value.getKey() == true){
+                 insideCount =  step.value.getValue();
              } else {
-                 totalCount = step.getValue();
+                 totalCount = step.value.getValue();
              }
 
          }

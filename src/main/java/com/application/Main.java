@@ -7,9 +7,10 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
-import org.apache.beam.sdk.values.KV;
-import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.TypeDescriptors;
+import org.apache.beam.sdk.transforms.join.CoGbkResult;
+import org.apache.beam.sdk.transforms.join.CoGroupByKey;
+import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple;
+import org.apache.beam.sdk.values.*;
 
 import java.util.logging.Logger;
 
@@ -27,10 +28,28 @@ public class Main {
     public static void PiWithCombine(PrecisionOptions options){
 
         Pipeline pipeline = Pipeline.create(options);
+
         pipeline
                 .apply(GenerateSequence.from(0).to(options.getInputPrecision()))
-                .apply(Combine.globally(new PIGeneratorFn())) ;
+                .apply(MapElements.into(TypeDescriptors.booleans())
+                        .via(element -> getHit()))
+                .apply(Count.perElement())
+                .apply(new GetPI())
 
+        //   .apply(MapElements.into(TypeDescriptor.of(KVWrapper.class))
+        //         .via(element -> new KVWrapper(KV.of(element.getKey(),element.getValue()))))
+        // .apply(Combine.globally(new GetResultFn()))
+                /*
+
+
+                .apply(Combine.globally((KV<Boolean,Integer> x, KV<Boolean,Integer> y) -> {
+
+                   Double approxPI = 4.0 * x.getValue() / (y.getValue() * 1.0);
+                   Double  relError =  Math.abs(approxPI - Math.PI) / Math.PI;
+                     String.format("^^^^^^^Approx PI is %f, Math lib PI is %f with  error  %f%%", approxPI, Math.PI,100 * relError);
+
+                }));
+        */;
         pipeline.run().waitUntilFinish();
     }
 
@@ -54,19 +73,12 @@ public class Main {
     }
 
 
+
     public static void main(String[] args) {
         PrecisionOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(PrecisionOptions.class);
 
-        Pipeline pipeline = Pipeline.create(options);
+        PiWithCombine(options);
 
-        pipeline
-                .apply(GenerateSequence.from(0).to(options.getInputPrecision()))
-                .apply(MapElements.into(TypeDescriptors.booleans())
-                .via(element -> getHit()))
-                .apply(Count.perElement())
-                .apply(Combine.globally(new GetResultFn()));
-
-        pipeline.run().waitUntilFinish();
 
 
     }
