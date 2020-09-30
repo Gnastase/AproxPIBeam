@@ -21,11 +21,13 @@ public class Main {
     private static final Logger __logger = Logger.getLogger("com.application.ApproxPIBeam");
 
 
-    public interface PrecisionOptions extends PipelineOptions{
+    public interface PrecisionOptions extends PipelineOptions {
+
         @Default.Long(100000)
         @Description("Give me a precision")
         Long getInputPrecision();
         void setInputPrecision(Long value);
+
     }
 
     public static void PiWithCombine(PrecisionOptions options){
@@ -41,10 +43,10 @@ public class Main {
 
         //   .apply(MapElements.into(TypeDescriptor.of(KVWrapper.class))
             //     .via(element -> new KVWrapper(KV.of(element.getKey(),element.getValue()))))
-     //    .apply(Combine.globally(new GetResultFn()));
+       //  .apply(Combine.globally(new GetResultFn()));
 
               //  .apply(Combine.globally((KV<Boolean,Long> x, KV<Boolean,Long> y) ->
-                        
+
                 //    4.0 * x.getValue() / (y.getValue() * 1.0);
                 //   Double  relError =  Math.abs(approxPI - Math.PI) / Math.PI;
                   //   String.format("^^^^^^^Approx PI is %f, Math lib PI is %f with  error  %f%%", approxPI, Math.PI,100 * relError);
@@ -78,8 +80,7 @@ public class Main {
     public static void PiSimpleWay(PrecisionOptions options){
         Pipeline pipeline = Pipeline.create(options);
 
-        final PCollectionView<Long> totalHitsView = pipeline.apply(Create.of(options.getInputPrecision()))
-                                                        .apply(View.asSingleton());
+       // final PCollectionView<Long> totalHitsView = pipeline.apply(Create.of(options.getInputPrecision())).apply(View.asSingleton()); -> pentru metoda cu sideInput
 
         pipeline
                 .apply(GenerateSequence.from(0).to(options.getInputPrecision()))
@@ -92,15 +93,19 @@ public class Main {
                .apply(ParDo.of(new DoFn<KVWrapper, String>(){
                    @ProcessElement
                    public void processElement(@Element KVWrapper input, OutputReceiver<String> outputReceiver, ProcessContext ctx){
-                       Double approxPI = 4.0 * input.value.getValue() / (ctx.sideInput(totalHitsView) * 1.0);
+
+                       PrecisionOptions opt =  ctx.getPipelineOptions().as(PrecisionOptions.class);
+
+                       Double approxPI = 4.0 * input.value.getValue() / (opt.getInputPrecision() * 1.0);
                        Double  relError =  Math.abs(approxPI - Math.PI) / Math.PI;
                        String result = String.format("^^^^^^^Approx PI is %f, Math lib PI is %f with  error  %f%%", approxPI, Math.PI,100 * relError);
                        __logger.info(result);
                        outputReceiver.output(result);
 
 
+                    //   ctx.sideInput(totalHitsView)
                    }
-               }).withSideInput("Total hits", totalHitsView));
+               }));//.withSideInput("Total hits", totalHitsView)); -> pentru metoda cu sideInput
 
 
         pipeline.run().waitUntilFinish();
