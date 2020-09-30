@@ -44,10 +44,12 @@ public class Main {
      //    .apply(Combine.globally(new GetResultFn()));
 
               //  .apply(Combine.globally((KV<Boolean,Long> x, KV<Boolean,Long> y) ->
-             //           "merge"
-                 //  Double approxPI = 4.0 * x.getValue() / (y.getValue() * 1.0);
-                 //  Double  relError =  Math.abs(approxPI - Math.PI) / Math.PI;
+                        
+                //    4.0 * x.getValue() / (y.getValue() * 1.0);
+                //   Double  relError =  Math.abs(approxPI - Math.PI) / Math.PI;
                   //   String.format("^^^^^^^Approx PI is %f, Math lib PI is %f with  error  %f%%", approxPI, Math.PI,100 * relError);
+              //      KV.of( 4.0 * x.getValue() / (y.getValue() * 1.0),Math.abs(4.0 * x.getValue() / (y.getValue() * 1.0) - Math.PI) / Math.PI)
+
             //    ));
         pipeline.run().waitUntilFinish();
     }
